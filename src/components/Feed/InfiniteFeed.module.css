@@ -1,0 +1,24 @@
+.infiniteFeed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .infiniteFeed {
+    gap: 2.5rem;
+    padding: 3rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .infiniteFeed {
+    display: none;
+  }
+}
+
+.sentinel {
+  height: 1px;
+  width: 100%;
+}

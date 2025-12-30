@@ -1,0 +1,51 @@
+.marqueeContainer {
+  display: none;
+  position: relative;
+  height: 80vh;
+  overflow: hidden;
+  background: #000;
+}
+
+@media (min-width: 1024px) {
+  .marqueeContainer {
+    display: block;
+  }
+}
+
+.marqueeTrack {
+  display: flex;
+  gap: 0;
+  will-change: transform;
+}
+
+.marqueeItem {
+  position: relative;
+  height: 100%;
+  width: auto;
+  flex-shrink: 0;
+  min-width: 300px;
+}
+
+.marqueeItem img {
+  display: block;
+}
+
+.exploreButton {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.exploreButton:hover {
+  background: rgba(255, 255, 255, 1);
+}
