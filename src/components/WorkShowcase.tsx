@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 
 const categories = [
   {
@@ -33,9 +33,35 @@ export default function WorkShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inView = useInView(containerRef, { once: true, margin: "-100px" });
-  const x = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 80, damping: 30, mass: 1.5 });
-  const [isDragging, setIsDragging] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const rafRef = useRef<number | null>(null);
+
+  // Auto-scroll loop
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const speed = 0.5; // px per frame
+
+    const tick = () => {
+      if (el && !isPaused) {
+        const half = el.scrollWidth / 2;
+        if (el.scrollLeft >= half) {
+          el.scrollLeft -= half;
+        }
+        el.scrollLeft += speed;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [isPaused]);
+
+  // Duplicate for seamless loop
+  const items = [...categories, ...categories];
 
   return (
     <section id="work" ref={containerRef} className="py-32">
@@ -51,31 +77,24 @@ export default function WorkShowcase() {
       </div>
 
       <motion.div
-        className="mt-16 cursor-grab overflow-hidden active:cursor-grabbing"
+        className="mt-16 overflow-x-auto scrollbar-hide"
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ duration: 0.8, delay: 0.3 }}
+        ref={scrollRef}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
       >
-        <motion.div
-          ref={scrollRef}
-          className="flex gap-6 px-6 lg:px-12"
-          style={{ x: springX }}
-          drag="x"
-          dragConstraints={{ left: -1800, right: 0 }}
-          dragElastic={0.1}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
-        >
-          {categories.map((cat, i) => (
-            <motion.div
-              key={cat.title}
+        <div className="flex gap-6 px-6 lg:px-12 w-max">
+          {items.map((cat, i) => (
+            <div
+              key={`${cat.title}-${i}`}
               className="group relative flex-shrink-0"
               style={{ width: "clamp(300px, 35vw, 500px)" }}
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.1 * i }}
             >
-              <div className="aspect-[3/4] overflow-hidden">
+              <div className="aspect-[3/4] overflow-hidden relative">
                 <img
                   src={cat.image}
                   alt={cat.title}
@@ -93,13 +112,13 @@ export default function WorkShowcase() {
                   View →
                 </span>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </motion.div>
 
       <div className="mx-auto mt-8 max-w-7xl px-6 lg:px-12">
-        <p className="text-body text-xs text-muted-foreground tracking-wider">← DRAG TO EXPLORE →</p>
+        <p className="text-body text-xs text-muted-foreground tracking-wider">AUTO-SCROLLING · HOVER TO PAUSE & SCROLL MANUALLY</p>
       </div>
     </section>
   );
