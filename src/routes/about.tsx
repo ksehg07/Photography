@@ -205,7 +205,7 @@ function AboutPage() {
 
           {/* Overlapping text brutalist element */}
           <div className="relative mt-20">
-            <span className="text-display text-[8rem] leading-none text-foreground/10 sm:text-[12rem] lg:text-[16rem]">
+            <span className="text-display text-[8rem] leading-none text-foreground/12 sm:text-[12rem] lg:text-[16rem]">
               WHY?
             </span>
             <motion.p
